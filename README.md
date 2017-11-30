@@ -4,9 +4,9 @@
 visualizzazione dell'ora mendiante scritte che vengono illuminate dall'accensione
 di led sottostanti:
 *                     .------------------------------.
-*                     |  IT IS       HALF       TEN  |
-*                     |                              |
-*                     |      QUARTER     TWENTY      |
+                     |  IT IS       HALF       TEN  |
+                     |                              |
+                     |      QUARTER     TWENTY      |
                      |                              |
                      |  FIVE       MINUTES     TO   |
                      |                              |
@@ -24,12 +24,15 @@ di led sottostanti:
                      '------------------------------'
 Le scritte sono in lingua inglese, la visualizzazione ha una granularità
 principale di cinque minuti (o'clock - five - ten ...)
-sono aggiunti del puntini (4 puntini) che portano la granularità al minuto
+
+Sono aggiunti del puntini (4 puntini) che portano la granularità al minuto
 è indicato se AM o PM e se è attivo il DST ("Daylight Saving time" ossia ora legale)
+
 esempi
-5:00 it is "five" "o'clock"
-5:27 it is "twenty" "five" "minutes" "past" "five" "." "." -> 5:25 + 2 puntini
-5:41 it is "quarter" "to" "five" "."  "."  "." "."         -> 5:15 + 4 puntini
+
+* 5:00 it is "five" "o'clock"
+* 5:27 it is "twenty" "five" "minutes" "past" "five" "." "." -> 5:25 + 2 puntini
+* 5:41 it is "quarter" "to" "five" "."  "."  "." "."         -> 5:15 + 4 puntini
 
 è prevista una gestione automatica dell'ora legale valida fino al 2031
 
@@ -40,3 +43,5 @@ esempi
   * 1 x Modulo HC-06 (Bluetooth)
   * Stricia LED tagliata in segmenti opportuni per le varie parole
   * 1 x TIP122 (Power Darlington)
+  * resistenze
+  * 4 x pulsanti
