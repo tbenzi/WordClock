@@ -1,12 +1,12 @@
 # WordClock
 
-# Scopo
+## Scopo
 visualizzazione dell'ora mendiante scritte che vengono illuminate dall'accensione
 di led sottostanti:
-                     .------------------------------.
-                     |  IT IS       HALF       TEN  |
-                     |                              |
-                     |      QUARTER     TWENTY      |
+*                     .------------------------------.
+*                     |  IT IS       HALF       TEN  |
+*                     |                              |
+*                     |      QUARTER     TWENTY      |
                      |                              |
                      |  FIVE       MINUTES     TO   |
                      |                              |
@@ -33,9 +33,10 @@ esempi
 
 è prevista una gestione automatica dell'ora legale valida fino al 2031
 
-# HW utilizzato:
-  1 x Arduino Mega 2560
-  4 x uln2803 (Darlington transistor array)
-  1 x Modulo RTC DS3231 (Real Time Clock)
-  1 x Modulo HC-06 (Bluetooth)
-  Stricia LED tagliata in segmenti opportuni per le varie parole
+## HW utilizzato:
+  * 1 x Arduino Mega 2560
+  * 4 x uln2803 (Darlington transistor array)
+  * 1 x Modulo RTC DS3231 (Real Time Clock)
+  * 1 x Modulo HC-06 (Bluetooth)
+  * Stricia LED tagliata in segmenti opportuni per le varie parole
+  * 1 x TIP122 (Power Darlington)
