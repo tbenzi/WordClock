@@ -3,7 +3,7 @@
 ## Scopo
 visualizzazione dell'ora mendiante scritte che vengono illuminate dall'accensione
 di led sottostanti:
-*                     .------------------------------.
+*                    .------------------------------.
                      |  IT IS       HALF       TEN  |
                      |                              |
                      |      QUARTER     TWENTY      |
@@ -43,5 +43,6 @@ esempi
   * 1 x Modulo HC-06 (Bluetooth)
   * Stricia LED tagliata in segmenti opportuni per le varie parole
   * 1 x TIP122 (Power Darlington)
-  * resistenze
   * 4 x pulsanti
+  * resistenze
+  * alimentatore
