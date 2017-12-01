@@ -3,7 +3,7 @@
 ## Scopo
 visualizzazione dell'ora mendiante scritte che vengono illuminate dall'accensione
 di led sottostanti:
-*                    .------------------------------.
+'                    .------------------------------.
                      |  IT IS       HALF       TEN  |
                      |                              |
                      |      QUARTER     TWENTY      |
@@ -22,6 +22,7 @@ di led sottostanti:
                      |                              |
                      |  AM   •    •    •    •   PM  |
                      '------------------------------'
+'
 Le scritte sono in lingua inglese, la visualizzazione ha una granularità
 principale di cinque minuti (o'clock - five - ten ...)
 
