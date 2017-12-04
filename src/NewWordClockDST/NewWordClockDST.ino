@@ -345,9 +345,11 @@ myLed Led[NUM_LED] = {
 	{true,  ".",          53, false, false, false},   // 27  LED_DOT4
 };
 
-struct {myPuls* pPuls;
+typedef struct {myPuls* pPuls;
 		myLed*	pLed;
-} data;
+} my_data;
+
+my_data data;
 
 // definizioni per macchina a stati generica --------------------------
 //
@@ -956,8 +958,9 @@ void ShowDateTimeOnSerial()
 	Ad ogni ciclo di refresch aggiorna i valori di ore e minuti leggendo l'RTC
 	Calcola i led da accendere in funzione del valore di ore e minuti
  * ***************************************************************************************/
-void StandardModeStatus()
+void StandardModeStatus(void* pStructData)
 {
+	my_data* pData = (my_data*)pStructData;
 	if (bRefreshCycle)
 	{
 		ReadDS3231();
@@ -968,8 +971,9 @@ void StandardModeStatus()
 /* ***************************************************************************************
 	Gestione ingresso nello stato STANDARD_MODE
  * **************************************************************************************/
-void StandardModePickUp()
+void StandardModePickUp(void* pStructData)
 {
+	my_data* pData = (my_data*)pStructData;
 	ResetCouterAndFlag();
 	bChangeToSTANDARD_MODE = false;
 }
@@ -980,8 +984,9 @@ void StandardModePickUp()
 	in modalità SET_CLOCK
 	permendo il pulsante SET o ricevendo il comando "ET" da seriale si entra in LED_TEST
  * ***************************************************************************************/
-ENUM_MODE StandardModeChangeStatus()
+int StandardModeChangeStatus(void* pStructData)
 {
+	my_data* pData = (my_data*)pStructData;
 	if ((Puls[PULS_MODE].bRiseEdge || Puls[PULS_MODE].bIn))
 	{
 		if (Puls[PULS_MODE].msInLevel >= MIN_MS_TO_SET_MODE)    // il pulsante deve essere premuto almeno MIN_MS_TO_SET_MODE
@@ -2076,6 +2081,11 @@ void setup()
 	byte    item;
 	myLed*  pLed  = &Led[0];
 	myPuls* pPuls = &Puls[0];
+
+	data.pPuls = myPuls;
+	data.pLed  = myLed;
+
+	my_data data;
 
 	// inizializzazione input
 	for (item = 0; item < NUM_PULS; item++, pPuls++)
