@@ -238,6 +238,9 @@
 #include <Wire.h>           // to communicate with I2C
 #include <SoftwareSerial.h> // to communicate with bluetooth
 
+#define NUM_STATES 3
+#include "StateMachine.h"
+
 // indici dei led
 enum E_LED {
 	LED_DST,		//  0
@@ -345,12 +348,6 @@ myLed Led[NUM_LED] = {
 	{true,  ".",          53, false, false, false},   // 27  LED_DOT4
 };
 
-typedef struct {myPuls* pPuls;
-		myLed*	pLed;
-} my_data;
-
-my_data data;
-
 // definizioni per macchina a stati generica --------------------------
 //
 //typedef void    (*myStatusFunc)();
@@ -380,19 +377,19 @@ typedef enum E_MODE {
 	NUM_MODE
 } ENUM_MODE;
 
-// Prototipi delle funzioni per la gestione degli stati
-void StandardModeStatus();
-void StandardModePickUp();
-ENUM_MODE StandardModeChangeStatus();
-
-void SetClockModeStatus();
-void SetClockModePickUp ();
-void SetClockModeDropOut ();
-ENUM_MODE SetClockModeChangeStatus();
-
-void LedTestModeStatus();
-void LedTestModePickUp ();
-ENUM_MODE LedTestModeChangeStatus();
+// // Prototipi delle funzioni per la gestione degli stati
+// void StandardModeStatus();
+// void StandardModePickUp();
+// ENUM_MODE StandardModeChangeStatus();
+// 
+// void SetClockModeStatus();
+// void SetClockModePickUp ();
+// void SetClockModeDropOut ();
+// ENUM_MODE SetClockModeChangeStatus();
+// 
+// void LedTestModeStatus();
+// void LedTestModePickUp ();
+// ENUM_MODE LedTestModeChangeStatus();
 
 //// definizione ed inizializzazione degli stati
 //myStatus Status[NUM_MODE] = {
@@ -402,7 +399,7 @@ ENUM_MODE LedTestModeChangeStatus();
 //	{LedTestModeStatus,  nullptr,             LedTestModePickUp,  (myChangeStatusFunc)LedTestModeChangeStatus,  0,          60000,        false,         "LED_TEST_MODE"},  // LED_TEST_MODE
 //};
 
-CStateMachine Status;
+CStateMachine States;
 
 					
 
@@ -420,24 +417,24 @@ typedef enum E_SETCLOCK_SUBSTATUS {
 } ENUM_SETCLOCK_SUBSTATUS;
 
 // Prototipi delle funzioni per la gestione dei sottostati
-void SetHourStatus();
-ENUM_SETCLOCK_SUBSTATUS SetHourChangeStatus();
-
-void SetMinutesStatus();
-void SetMinutesPickUp ();
-ENUM_SETCLOCK_SUBSTATUS SetMinutesChangeStatus();
-
-void SetFinishPickUp ();
-ENUM_SETCLOCK_SUBSTATUS SetFinishChangeStatus();
-
-// definizione ed inizializzazione degli stati
-myStatus SetClockSubStatus[NUM_SETCLOCK_SUBSTATUS] = {
-//  pStatus         pDropOut    pPickUp             pChange                                 msInStatus  maxMsInStatus bmaxMsInStatus associate string
-	{SetHourStatus,    nullptr,    nullptr,            (myChangeStatusFunc)SetHourChangeStatus,    0,          0,          false,      "SET_HOUR"},    // SET_HOUR
-	{SetMinutesStatus, nullptr,    SetMinutesPickUp,   (myChangeStatusFunc)SetMinutesChangeStatus, 0,          0,          false,      "SET_MINUTES"}, // SET_MINUTES
-	{nullptr,          nullptr,    SetFinishPickUp,    (myChangeStatusFunc)SetFinishChangeStatus,  0,          0,          false,      "LED_FINISH"},  // LED_FINISH
-};
-CStateMachine SetClockSubStatus;
+// void SetHourStatus();
+// ENUM_SETCLOCK_SUBSTATUS SetHourChangeStatus();
+// 
+// void SetMinutesStatus();
+// void SetMinutesPickUp ();
+// ENUM_SETCLOCK_SUBSTATUS SetMinutesChangeStatus();
+// 
+// void SetFinishPickUp ();
+// ENUM_SETCLOCK_SUBSTATUS SetFinishChangeStatus();
+// 
+// // definizione ed inizializzazione degli stati
+// myStatus SetClockSubStatus[NUM_SETCLOCK_SUBSTATUS] = {
+// //  pStatus         pDropOut    pPickUp             pChange                                 msInStatus  maxMsInStatus bmaxMsInStatus associate string
+// 	{SetHourStatus,    nullptr,    nullptr,            (myChangeStatusFunc)SetHourChangeStatus,    0,          0,          false,      "SET_HOUR"},    // SET_HOUR
+// 	{SetMinutesStatus, nullptr,    SetMinutesPickUp,   (myChangeStatusFunc)SetMinutesChangeStatus, 0,          0,          false,      "SET_MINUTES"}, // SET_MINUTES
+// 	{nullptr,          nullptr,    SetFinishPickUp,    (myChangeStatusFunc)SetFinishChangeStatus,  0,          0,          false,      "LED_FINISH"},  // LED_FINISH
+// };
+CStateMachine SetClockSubStates;
 
 //
 // --------------------------------------------------------------------
@@ -768,7 +765,8 @@ void WriteOutput ()
 	if (bWriteOnSerial)
 	{
 		char txt [64];
-		Serial.print(Status[mode].associateString);
+//		Serial.print(Status[mode].associateString);
+		Serial.print(States.GetStatusName());
 		Serial.print(" - ");
 		if (mode != LED_TEST_MODE)
 		{
@@ -788,7 +786,8 @@ void WriteOutput ()
 			}
 		}
 		Serial.print("\n");
-		sprintf (txt, "*#WordClock - %s *", Status[mode].associateString);
+//		sprintf (txt, "*#WordClock - %s *", Status[mode].associateString);
+		sprintf (txt, "*#WordClock - %s *", States.GetStatusName());
 		bluetooth.print(txt);
 	}
 }
@@ -944,8 +943,8 @@ void ShowDateTimeOnSerial()
    ======================================================================================= */
  void ResetCouterAndFlag()
  {
-	Status[mode].msInStatus = 0;
-	Status[mode].bmaxMsInStatus = false;
+// !!!!!!!!!!!!!	Status[mode].msInStatus = 0;
+// !!!!!!!!!!!!!	Status[mode].bmaxMsInStatus = false;
  }
 
 /* =======================================================================================
@@ -960,7 +959,6 @@ void ShowDateTimeOnSerial()
  * ***************************************************************************************/
 void StandardModeStatus(void* pStructData)
 {
-	my_data* pData = (my_data*)pStructData;
 	if (bRefreshCycle)
 	{
 		ReadDS3231();
@@ -973,7 +971,6 @@ void StandardModeStatus(void* pStructData)
  * **************************************************************************************/
 void StandardModePickUp(void* pStructData)
 {
-	my_data* pData = (my_data*)pStructData;
 	ResetCouterAndFlag();
 	bChangeToSTANDARD_MODE = false;
 }
@@ -986,7 +983,6 @@ void StandardModePickUp(void* pStructData)
  * ***************************************************************************************/
 int StandardModeChangeStatus(void* pStructData)
 {
-	my_data* pData = (my_data*)pStructData;
 	if ((Puls[PULS_MODE].bRiseEdge || Puls[PULS_MODE].bIn))
 	{
 		if (Puls[PULS_MODE].msInLevel >= MIN_MS_TO_SET_MODE)    // il pulsante deve essere premuto almeno MIN_MS_TO_SET_MODE
@@ -1062,7 +1058,7 @@ byte IncDecValue(byte value, byte maxVal)
 {
 	if (Puls[PULS_NEXT_HM].bRiseEdge)
 	{
-		Status[mode].msInStatus = 0;
+// !!!!!!!!!!!		Status[mode].msInStatus = 0;
 		value++;
 		if (value >= maxVal)
 		{
@@ -1071,7 +1067,7 @@ byte IncDecValue(byte value, byte maxVal)
 	}
 	else if (Puls[PULS_PREV_HM].bRiseEdge)
 	{
-		Status[mode].msInStatus = 0;
+// !!!!!!!!!!!		Status[mode].msInStatus = 0;
 		value--;
 		if (value == 255)
 		{
@@ -1085,7 +1081,7 @@ byte IncDecValue(byte value, byte maxVal)
 	Gestione stato SET_HOUR
 	incrementa o decerementa il valore dell'ora
  * **************************************************************************************/
-void SetHourStatus()
+void SetHourStatus(void* pStructData)
 {
 	setHours = IncDecValue(setHours, 24);
 }
@@ -1094,7 +1090,7 @@ void SetHourStatus()
 	Gestione cambio stato SET_HOUR
 	premendo il pulsate SET si passa ad impostare i minuti
  * **************************************************************************************/
-ENUM_SETCLOCK_SUBSTATUS SetHourChangeStatus()
+int SetHourChangeStatus(void* pStructData)
 {
 	if (Puls[PULS_SET].bRiseEdge)
 	{
@@ -1107,7 +1103,7 @@ ENUM_SETCLOCK_SUBSTATUS SetHourChangeStatus()
 	Gestione stato SET_MINUTES
 	incrementa o decerementa il valore dei minuti
  * **************************************************************************************/
-void SetMinutesStatus()
+void SetMinutesStatus(void* pStructData)
 {
 	setMin = IncDecValue(setMin, 60);
 }
@@ -1116,16 +1112,16 @@ void SetMinutesStatus()
 	Gestione ingresso nello stato SET_MINUTES
 	azzera il contatore di permanenza nello stato SET_CLOCL_MODE
  * **************************************************************************************/
-void SetMinutesPickUp ()
+void SetMinutesPickUp (void* pStructData)
 {
-	Status[mode].msInStatus = 0;
+	// !!!!!!!!!!!!!!! Status[mode].msInStatus = 0;
 }
 
 /* ***************************************************************************************
 	Gestione cambio stato SET_MINUTES
 	premendo il pulsate SET si passa nello stato FINISH dove si imposta l'RTC
  * **************************************************************************************/
-ENUM_SETCLOCK_SUBSTATUS SetMinutesChangeStatus()
+int SetMinutesChangeStatus(void* pStructData)
 {
 	if (Puls[PULS_SET].bRiseEdge)
 	{
@@ -1137,7 +1133,7 @@ ENUM_SETCLOCK_SUBSTATUS SetMinutesChangeStatus()
 /* ***************************************************************************************
 	Gestione ingresso nello stato SET_FINISH
  * **************************************************************************************/
-void SetFinishPickUp()
+void SetFinishPickUp(void* pStructData)
 {
 	bLedBlink = false;
 	bToSet = true;
@@ -1146,7 +1142,7 @@ void SetFinishPickUp()
 /* ***************************************************************************************
 	Gestione cambio stato SET_FINISH
  * **************************************************************************************/
-ENUM_SETCLOCK_SUBSTATUS SetFinishChangeStatus()
+int SetFinishChangeStatus(void* pStructData)
 {
 	return SET_FINISH;
 }
@@ -1157,7 +1153,7 @@ ENUM_SETCLOCK_SUBSTATUS SetFinishChangeStatus()
 	gestisce il set di ore e minuti (macchina a stati)
 	calcola i led da accendere in funzione dei valori di ore e minuti che si stanno impostando
  * **************************************************************************************/
-void SetClockModeStatus()
+void SetClockModeStatus(void* pStructData)
 {
 	register myLed* pLed = &Led[0];
 
@@ -1166,7 +1162,10 @@ void SetClockModeStatus()
 		BlinkSettingLed();
 	}
 
-	StateMachine(SetClockSubStatus, (int&)setClockSubStatus, (int&)oldsSetClockSubStatus);
+	oldsSetClockSubStatus = SetClockSubStates.GetStatusInd();
+	SetClockSubStates.Manage();
+	setClockSubStatus = SetClockSubStates.GetStatusInd();
+//	StateMachine(SetClockSubStatus, (int&)setClockSubStatus, (int&)oldsSetClockSubStatus);
 
 	CalcWordClock(setMin, setHours);
 
@@ -1179,7 +1178,7 @@ void SetClockModeStatus()
 /* ***************************************************************************************
 	Gestione ingresso nello stato SET_CLOCK_MODE
  * **************************************************************************************/
-void SetClockModePickUp ()
+void SetClockModePickUp (void* pStructData)
 {
 	register myLed* pLed = &Led[0];
 
@@ -1202,7 +1201,7 @@ void SetClockModePickUp ()
 	imposta l'RTC se deve farlo
 	disabilita il lampeggio dei led
  * **************************************************************************************/
-void SetClockModeDropOut ()
+void SetClockModeDropOut (void* pStructData)
 {
 	if (bToSet)  // devo fare il set di RTC
 	{
@@ -1221,11 +1220,12 @@ void SetClockModeDropOut ()
 	- premendo il pulsnato MODE (non si esegue alcun set di RTC)
 	- è superato il tempo massimo di permanenza nello stato (non si esegue alcun set di RTC)
  * **************************************************************************************/
-ENUM_MODE SetClockModeChangeStatus()
+int SetClockModeChangeStatus(void* pStructData)
 {
 	if ((setClockSubStatus == SET_FINISH) ||
-		Puls[PULS_MODE].bRiseEdge ||
-		Status[SET_CLOCK_MODE].bmaxMsInStatus)
+		Puls[PULS_MODE].bRiseEdge // !!!!!!!!!!! ||
+		// !!!!!!!!!!! Status[SET_CLOCK_MODE].bmaxMsInStatus
+		)
 	{
 		return STANDARD_MODE;
 	}
@@ -1241,7 +1241,7 @@ ENUM_MODE SetClockModeChangeStatus()
    Gestione dello stato LED_TEST_MODE
    Accende, uno alla volta, tutti i led csambiando il led acceso ad ogni clclo di refresh
  * **************************************************************************************/
-void LedTestModeStatus()
+void LedTestModeStatus(void* pStructData)
 {
 	if (!bRefreshCycle)
 	{
@@ -1266,7 +1266,7 @@ void LedTestModeStatus()
 	Gestione ingresso nello stato LED_TEST_MODE
 	spegne tutti i led
  * **************************************************************************************/
-void LedTestModePickUp ()
+void LedTestModePickUp (void* pStructData)
 {
 	register myLed* pLed = &Led[0];
 
@@ -1285,14 +1285,15 @@ void LedTestModePickUp ()
 	se è arrivato comando da seriale o
 	se è passato il tempo massimo nello stato torna a STANDARD_MODE
  * **************************************************************************************/
-ENUM_MODE LedTestModeChangeStatus()
+int LedTestModeChangeStatus(void* pStructData)
 {
 	if (Puls[PULS_MODE].bRiseEdge       ||
 		Puls[PULS_SET].bRiseEdge        ||
 		Puls[PULS_NEXT_HM].bRiseEdge    ||
 		Puls[PULS_PREV_HM].bRiseEdge    ||
-		bChangeToSTANDARD_MODE ||
-		Status[LED_TEST_MODE].bmaxMsInStatus )
+		bChangeToSTANDARD_MODE // !!!!!!!!!!! ||
+		// !!!!!!!!!!! Status[LED_TEST_MODE].bmaxMsInStatus
+		)
 	{
 		return STANDARD_MODE;
 	}
@@ -1914,51 +1915,51 @@ void CalcWordClock(byte vminute, byte vhour)
 	}
 }
 
-/* =======================================================================================
-   =======================================================================================
-	MACCHINA A STATI GENERICA
-	****** la routine di cambio stato DEVE essere sempre definita! *******
-	le altre (pickup, stato e dropout) possono non essere definite
-   =======================================================================================
-   ======================================================================================= */
-void StateMachine(myStatus* pStatus, int& act_mode, int& past_mode)
-{
-	// controllo del cambio stato
-	act_mode = (*pStatus[act_mode].pChangeStatus)();
-
-	if (act_mode != past_mode)
-	{
-		// cambio stato
-		char txt[64];
-		sprintf (txt, "Change from %s to %s",
-					pStatus[past_mode].associateString,
-					pStatus[act_mode].associateString);
-		Serial.println(txt);
-
-		if (*pStatus[past_mode].pDropOut != nullptr)
-		{
-			(*pStatus[past_mode].pDropOut)();
-		}
-
-		past_mode = act_mode;
-
-		if (*pStatus[act_mode].pPickUp != nullptr)
-		{
-			(*pStatus[act_mode].pPickUp)();
-		}
-		pStatus[act_mode].msInStatus = 0;
-	}
-	else
-	{
-		// calcolo permanenza nello stato e gestione stato
-		pStatus[act_mode].msInStatus += MS_CYCLE;
-		pStatus[act_mode].bmaxMsInStatus = (Status[act_mode].msInStatus >= Status[act_mode].maxMsInStatus);
-		if (*pStatus[past_mode].pStatus != nullptr)
-		{
-			(*pStatus[act_mode].pStatus)();
-		}
-	}
-}
+///* =======================================================================================
+//   =======================================================================================
+//	MACCHINA A STATI GENERICA
+//	****** la routine di cambio stato DEVE essere sempre definita! *******
+//	le altre (pickup, stato e dropout) possono non essere definite
+//   =======================================================================================
+//   ======================================================================================= */
+//void StateMachine(myStatus* pStatus, int& act_mode, int& past_mode)
+//{
+//	// controllo del cambio stato
+//	act_mode = (*pStatus[act_mode].pChangeStatus)();
+//
+//	if (act_mode != past_mode)
+//	{
+//		// cambio stato
+//		char txt[64];
+//		sprintf (txt, "Change from %s to %s",
+//					pStatus[past_mode].associateString,
+//					pStatus[act_mode].associateString);
+//		Serial.println(txt);
+//
+//		if (*pStatus[past_mode].pDropOut != nullptr)
+//		{
+//			(*pStatus[past_mode].pDropOut)();
+//		}
+//
+//		past_mode = act_mode;
+//
+//		if (*pStatus[act_mode].pPickUp != nullptr)
+//		{
+//			(*pStatus[act_mode].pPickUp)();
+//		}
+//		pStatus[act_mode].msInStatus = 0;
+//	}
+//	else
+//	{
+//		// calcolo permanenza nello stato e gestione stato
+//		pStatus[act_mode].msInStatus += MS_CYCLE;
+//		pStatus[act_mode].bmaxMsInStatus = (Status[act_mode].msInStatus >= Status[act_mode].maxMsInStatus);
+//		if (*pStatus[past_mode].pStatus != nullptr)
+//		{
+//			(*pStatus[act_mode].pStatus)();
+//		}
+//	}
+//}
 
 /* ***************************************************************************************
 	Calcoli vari in funzione dei cicli:
@@ -2018,7 +2019,9 @@ void setup()
 
 	bluetooth.begin(9600);
 
-	Status.AssignState( 0, 
+	States.AssignData(nullptr, 0);
+	
+	States.AssignState( 0, 
 						StandardModeStatus,
 						nullptr,
 						nullptr,
@@ -2028,27 +2031,28 @@ void setup()
 						0,
 						"Standard"); 
 	
-	Status.AssignState(	1, 
+	States.AssignState(	1, 
 						SetClockModeStatus,
 						SetClockModeDropOut,
 						nullptr,
 						SetClockModePickUp,
 						SetClockModeChangeStatus,
-						60000,
+						0,
 						0,
 						"SetClock"); 
 	
-	Status.AssignState(	1, 
+	States.AssignState(	1, 
 						LedTestModeStatus,
 						nullptr,
 						nullptr,
 						LedTestModePickUp,
 						LedTestModeChangeStatus,
-						60000,
+						0,
 						0,
 						"TestLed"); 
 
-	SetClockSubStatus.AssignState( 0, 
+	SetClockSubStates.AssignData(nullptr, 0);
+	SetClockSubStates.AssignState( 0, 
 						SetHourStatus,
 						nullptr,
 						nullptr,
@@ -2058,7 +2062,7 @@ void setup()
 						0,
 						"SET_HOUR"); 
 	
-	SetClockSubStatus.AssignState(	1, 
+	SetClockSubStates.AssignState(	1, 
 						SetMinutesStatus,
 						nullptr,
 						nullptr,
@@ -2068,7 +2072,7 @@ void setup()
 						0,
 						"SET_MINUTES"); 
 	
-	SetClockSubStatus.AssignState(	1, 
+	SetClockSubStates.AssignState(	1, 
 						nullptr,
 						nullptr,
 						nullptr,
@@ -2081,11 +2085,6 @@ void setup()
 	byte    item;
 	myLed*  pLed  = &Led[0];
 	myPuls* pPuls = &Puls[0];
-
-	data.pPuls = myPuls;
-	data.pLed  = myLed;
-
-	my_data data;
 
 	// inizializzazione input
 	for (item = 0; item < NUM_PULS; item++, pPuls++)
@@ -2140,7 +2139,10 @@ void loop()
 
 	ReadInput();
 
-	StateMachine(Status, (int&)mode, (int&)oldMode);
+	oldMode = States.GetStatusInd();
+	States.Manage();
+	mode = States.GetStatusInd();
+//	StateMachine(Status, (int&)mode, (int&)oldMode);
 
 	WriteOutput();
 
