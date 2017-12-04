@@ -22,6 +22,7 @@ di led sottostanti:
                      |                              |
                      |  AM   •    •    •    •   PM  |
                      '------------------------------'
+
 Le scritte sono in lingua inglese, la visualizzazione ha una granularità
 principale di cinque minuti (o'clock - five - ten ...)
 
