@@ -559,13 +559,9 @@ byte    ledInTest     = 255;    // numero del LED in test (modalità LED_TEST_MO
 static bool USB_SERIAL = true;
 static bool BLUETOOTH_SERIAL = false;
 
-//ENUM_MODE mode;                   // modalità attiva
-//ENUM_MODE oldMode;                // modalità attiva precedente
 int mode;                   // modalità attiva
 int oldMode;                // modalità attiva precedente
 
-//ENUM_SETCLOCK_SUBSTATUS setClockSubStatus;        // sotto stato set_clock
-//ENUM_SETCLOCK_SUBSTATUS oldsSetClockSubStatus;    // sotto stato set_clock set precedente
 int setClockSubStatus;      // sotto stato set_clock
 int oldsSetClockSubStatus;  // sotto stato set_clock set precedente
 
@@ -1771,14 +1767,6 @@ void ManageAllSerialCommand(bool bSerial)
 //    }
 //}
 
-/* ***************************************************************************************
-	Gestione dei comandi da tutte le seriali
- * **************************************************************************************/
-//void ManageAllSerialCommand()
-//{
-//    ManageSerialCommand();
-//    ManageBluetoothCommand();
-//}
 
 /* =======================================================================================
    =======================================================================================
@@ -2051,7 +2039,6 @@ void loop()
 {
 	ManageCycleCounters();
 
-//	ManageAllSerialCommand();
 	ManageAllSerialCommand(USB_SERIAL);
 	ManageAllSerialCommand(BLUETOOTH_SERIAL);
 
