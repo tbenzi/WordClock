@@ -31,9 +31,9 @@
 //                      |                              |
 //                      |  FIVE       MINUTES     TO   |
 //                      |                              |
-//                      |  PAST        ONE       TWO   |
+//                      |  PAST        ONE      THREE  |
 //                      |                              |
-//                      |  THREE      FOUR       FIVE  |
+//                      |  TWO        FOUR       FIVE  |
 //                      |                              |
 //                      |  SIX        SEVEN      EIGH  |
 //                      |                              |
@@ -241,66 +241,36 @@
 #define NUM_STATES 3
 #include "StateMachine.h"
 
-LED_HALF,
-LED_TEN_MIN,
-LED_QUARTER,
-LED_TWENTY,
-LED_FIVE_MIN,
-LED_MINUTES,
-LED_TO,
-LED_PAST,
-LED_ONE,
-LED_THREE,
-LED_TWO,
-LED_FOUR,
-LED_FIVE,
-LED_SIX,
-LED_SEVEN,
-LED_EIGHT,
-LED_NINE,
-LED_TEN,
-LED_ELEVEN,
-LED_TWELVE,
-LED_OCLOCK,
-LED_DST,
-LED_AM,
-LED_DOT1,
-LED_DOT2,
-LED_DOT3,
-LED_DOT4,
-LED_PM
-
-
 // indici dei led
 enum E_LED {
-    LED_DST,      //  0
-    LED_AM,       //  1
-    LED_PM,       //  2
-    LED_HALF,     //  3
-    LED_TEN_MIN,  //  4
-    LED_QUARTER,  //  5
-    LED_TWENTY,   //  6
-    LED_FIVE_MIN, //  7
-    LED_MINUTES,  //  8
-    LED_TO,       //  9
-    LED_PAST,     // 10
-    LED_ONE,      // 11
-    LED_TWO,      // 12
-    LED_THREE,    // 13
-    LED_FOUR,     // 14
-    LED_FIVE,     // 15
-    LED_SIX,      // 16
-    LED_SEVEN,    // 17
-    LED_EIGHT,    // 18
-    LED_NINE,     // 19
-    LED_TEN,      // 20
-    LED_ELEVEN,   // 21
-    LED_TWELVE,   // 22
-    LED_OCLOCK,   // 23
-    LED_DOT1,     // 24
-    LED_DOT2,     // 25
-    LED_DOT3,     // 26
-    LED_DOT4,     // 27
+    LED_DST,      //  0 26
+    LED_AM,       //  1 27
+    LED_PM,       //  2 28
+    LED_HALF,     //  3 29
+    LED_TEN_MIN,  //  4 30
+    LED_QUARTER,  //  5 31
+    LED_TWENTY,   //  6 32
+    LED_FIVE_MIN, //  7 33
+    LED_MINUTES,  //  8 34
+    LED_TO,       //  9 35
+    LED_PAST,     // 10 36
+    LED_ONE,      // 11 37
+    LED_TWO,      // 12 38
+    LED_THREE,    // 13 39
+    LED_FOUR,     // 14 40
+    LED_FIVE,     // 15 41
+    LED_SIX,      // 16 42
+    LED_SEVEN,    // 17 43
+    LED_EIGHT,    // 18 44
+    LED_NINE,     // 19 45
+    LED_TEN,      // 20 46
+    LED_ELEVEN,   // 21 47
+    LED_TWELVE,   // 22 48
+    LED_OCLOCK,   // 23 49
+    LED_DOT1,     // 24 50
+    LED_DOT2,     // 25 51
+    LED_DOT3,     // 26 52
+    LED_DOT4,     // 27 53
     NUM_LED       // 28
 };
 
@@ -348,55 +318,35 @@ myPuls Puls[NUM_PULS] = {
 // definizione e inizializzazione dei led
 myLed Led[NUM_LED] = {
 //   toMin    string     add   out   OldOut blink
-    {false, " DST",       26, false, false, false},   //  0  LED_DST
-    {false, " AM",        27, false, false, false},   //  1  LED_AM
-    {false, " PM",        28, false, false, false},   //  2  LED_PM
-    {true,  " half",      29, false, false, false},   //  3  LED_HALF
-    {true,  " ten",       30, false, false, false},   //  4  LED_TEN_MIN
-    {true,  " quarter",   31, false, false, false},   //  5  LED_QUARTER
-    {true,  " twenty",    32, false, false, false},   //  6  LED_TWENTY
-    {true,  " five",      33, false, false, false},   //  7  LED_FIVE_MIN
-    {true,  " minutes",   34, false, false, false},   //  8  LED_MINUTES
-    {true,  " to",        35, false, false, false},   //  9  LED_TO
-    {true,  " past",      36, false, false, false},   // 10  LED_PAST
-    {false, " one",       37, false, false, false},   // 11  LED_ONE
-    {false, " two",       38, false, false, false},   // 12  LED_TWO
-    {false, " three",     39, false, false, false},   // 13  LED_THREE
-    {false, " four",      40, false, false, false},   // 14  LED_FOUR
-    {false, " five",      41, false, false, false},   // 15  LED_FIVE
-    {false, " six",       42, false, false, false},   // 16  LED_SIX
-    {false, " seven",     43, false, false, false},   // 17  LED_SEVEN
-    {false, " eight",     44, false, false, false},   // 18  LED_EIGHT
-    {false, " nine",      45, false, false, false},   // 19  LED_NINE
-    {false, " ten",       46, false, false, false},   // 20  LED_TEN
-    {false, " eleven",    47, false, false, false},   // 21  LED_ELEVEN
-    {false, " twelve",    48, false, false, false},   // 22  LED_TWELVE
-    {true,  " o'clock",   49, false, false, false},   // 23  LED_OCLOCK
-    {true,  " .",         50, false, false, false},   // 24  LED_DOT1
-    {true,  ".",          51, false, false, false},   // 25  LED_DOT2
-    {true,  ".",          52, false, false, false},   // 26  LED_DOT3
-    {true,  ".",          53, false, false, false},   // 27  LED_DOT4
+    {false, " DST",       47, false, false, false},   //  0  LED_DST      
+    {false, " AM",        48, false, false, false},   //  1  LED_AM       
+    {false, " PM",        53, false, false, false},   //  2  LED_PM       
+    {true,  " half",      26, false, false, false},   //  3  LED_HALF     
+    {true,  " ten",       27, false, false, false},   //  4  LED_TEN_MIN  
+    {true,  " quarter",   28, false, false, false},   //  5  LED_QUARTER  
+    {true,  " twenty",    29, false, false, false},   //  6  LED_TWENTY   
+    {true,  " five",      30, false, false, false},   //  7  LED_FIVE_MIN 
+    {true,  " minutes",   31, false, false, false},   //  8  LED_MINUTES  
+    {true,  " to",        32, false, false, false},   //  9  LED_TO       
+    {true,  " past",      33, false, false, false},   // 10  LED_PAST     
+    {false, " one",       34, false, false, false},   // 11  LED_ONE      
+    {false, " two",       36, false, false, false},   // 12  LED_TWO      
+    {false, " three",     35, false, false, false},   // 13  LED_THREE    
+    {false, " four",      37, false, false, false},   // 14  LED_FOUR     
+    {false, " five",      38, false, false, false},   // 15  LED_FIVE     
+    {false, " six",       39, false, false, false},   // 16  LED_SIX      
+    {false, " seven",     40, false, false, false},   // 17  LED_SEVEN    
+    {false, " eight",     41, false, false, false},   // 18  LED_EIGHT    
+    {false, " nine",      42, false, false, false},   // 19  LED_NINE     
+    {false, " ten",       43, false, false, false},   // 20  LED_TEN      
+    {false, " eleven",    44, false, false, false},   // 21  LED_ELEVEN   
+    {false, " twelve",    45, false, false, false},   // 22  LED_TWELVE   
+    {true,  " o'clock",   46, false, false, false},   // 23  LED_OCLOCK   
+    {true,  " .",         49, false, false, false},   // 24  LED_DOT1     
+    {true,  ".",          50, false, false, false},   // 25  LED_DOT2     
+    {true,  ".",          51, false, false, false},   // 26  LED_DOT3     
+    {true,  ".",          52, false, false, false},   // 27  LED_DOT4     
 };
-
-// definizioni per macchina a stati generica --------------------------
-//
-//typedef void    (*myStatusFunc)();
-//typedef void    (*myDropOutFunc)();
-//typedef void    (*myPickUpFunc)();
-//typedef int     (*myChangeStatusFunc)();
-//
-//struct myStatus {
-//  myStatusFunc       pStatus;           // ptr a funzione di stato -             può essere nullptr
-//  myDropOutFunc      pDropOut;          // ptr a funzione uscita dallo stato -   può essere nullptr
-//  myPickUpFunc       pPickUp;           // ptr a funzione ingresso nello stato - può essere nullptr
-//  myChangeStatusFunc pChangeStatus;     // ptr a funzione cambio stato -         OBBLIGATORIA
-//  unsigned int       msInStatus;        // millisecondi di permanenza nello stato
-//  unsigned int       maxMsInStatus;     // massima permanenza nello stato
-//  boolean            bmaxMsInStatus;    // flag superata la massima permanenza nello stato
-//  const char*        associateString;   // testo descrizione dello stato (per stampe)
-//};
-//
-// --------------------------------------------------------------------
 
 // --------------------------------------------------------------------
 // modi di funzionamento
@@ -407,35 +357,7 @@ typedef enum E_MODE {
     NUM_MODE
 } ENUM_MODE;
 
-// // Prototipi delle funzioni per la gestione degli stati
-// void StandardModeStatus();
-// void StandardModePickUp();
-// ENUM_MODE StandardModeChangeStatus();
-//
-// void SetClockModeStatus();
-// void SetClockModePickUp ();
-// void SetClockModeDropOut ();
-// ENUM_MODE SetClockModeChangeStatus();
-//
-// void LedTestModeStatus();
-// void LedTestModePickUp ();
-// ENUM_MODE LedTestModeChangeStatus();
-
-//// definizione ed inizializzazione degli stati
-//myStatus Status[NUM_MODE] = {
-////  pStatus              pDropOut             pPickUp             pChange                                       msInStatus  maxMsInStatus bmaxMsInStatus associate string
-//  {StandardModeStatus, nullptr,             StandardModePickUp, (myChangeStatusFunc)StandardModeChangeStatus, 0,          0,            false,         "STANDARD_MODE"},  // STANDARD_MODE
-//  {SetClockModeStatus, SetClockModeDropOut, SetClockModePickUp, (myChangeStatusFunc)SetClockModeChangeStatus, 0,          60000,        false,         "SET_CLOCK_MODE"}, // SET_CLOCK_MODE
-//  {LedTestModeStatus,  nullptr,             LedTestModePickUp,  (myChangeStatusFunc)LedTestModeChangeStatus,  0,          60000,        false,         "LED_TEST_MODE"},  // LED_TEST_MODE
-//};
-
 CStateMachine States;
-
-
-
-
-//
-// --------------------------------------------------------------------
 
 // --------------------------------------------------------------------
 // sottostati di SET_CLOCK_MODE
@@ -446,29 +368,9 @@ typedef enum E_SETCLOCK_SUBSTATUS {
     NUM_SETCLOCK_SUBSTATUS
 } ENUM_SETCLOCK_SUBSTATUS;
 
-// Prototipi delle funzioni per la gestione dei sottostati
-// void SetHourStatus();
-// ENUM_SETCLOCK_SUBSTATUS SetHourChangeStatus();
-//
-// void SetMinutesStatus();
-// void SetMinutesPickUp ();
-// ENUM_SETCLOCK_SUBSTATUS SetMinutesChangeStatus();
-//
-// void SetFinishPickUp ();
-// ENUM_SETCLOCK_SUBSTATUS SetFinishChangeStatus();
-//
-// // definizione ed inizializzazione degli stati
-// myStatus SetClockSubStatus[NUM_SETCLOCK_SUBSTATUS] = {
-// //  pStatus         pDropOut    pPickUp             pChange                                 msInStatus  maxMsInStatus bmaxMsInStatus associate string
-//  {SetHourStatus,    nullptr,    nullptr,            (myChangeStatusFunc)SetHourChangeStatus,    0,          0,          false,      "SET_HOUR"},    // SET_HOUR
-//  {SetMinutesStatus, nullptr,    SetMinutesPickUp,   (myChangeStatusFunc)SetMinutesChangeStatus, 0,          0,          false,      "SET_MINUTES"}, // SET_MINUTES
-//  {nullptr,          nullptr,    SetFinishPickUp,    (myChangeStatusFunc)SetFinishChangeStatus,  0,          0,          false,      "LED_FINISH"},  // LED_FINISH
-// };
 CStateMachine SetClockSubStates;
 
-//
 // --------------------------------------------------------------------
-
 // definizione di costanti
 #define MS_CYCLE 100
 #define MIN_MS_TO_SET_MODE 3000
@@ -601,13 +503,9 @@ byte    ledInTest     = 255;    // numero del LED in test (modalità LED_TEST_MO
 static bool USB_SERIAL = true;
 static bool BLUETOOTH_SERIAL = false;
 
-//ENUM_MODE mode;                   // modalità attiva
-//ENUM_MODE oldMode;                // modalità attiva precedente
 int mode;                   // modalità attiva
 int oldMode;                // modalità attiva precedente
 
-//ENUM_SETCLOCK_SUBSTATUS setClockSubStatus;        // sotto stato set_clock
-//ENUM_SETCLOCK_SUBSTATUS oldsSetClockSubStatus;    // sotto stato set_clock set precedente
 int setClockSubStatus;      // sotto stato set_clock
 int oldsSetClockSubStatus;  // sotto stato set_clock set precedente
 
@@ -680,7 +578,6 @@ struct myDayDST {
 
 myDayDST dayDST[] = {
 //  start stop
-    {26,   29},   // 2017
     {25,   28},   // 2018
     {31,   27},   // 2019
     {29,   25},   // 2020
@@ -795,7 +692,6 @@ void WriteOutput ()
     if (bWriteOnSerial)
     {
         char txt [64];
-//      Serial.print(Status[mode].associateString);
         Serial.print(States.GetStatusName());
         Serial.print(" - ");
         if (mode != LED_TEST_MODE)
@@ -816,7 +712,6 @@ void WriteOutput ()
             }
         }
         Serial.print("\n");
-//      sprintf (txt, "*#WordClock - %s *", Status[mode].associateString);
         sprintf (txt, "*#WordClock - %s *", States.GetStatusName());
         bluetooth.print(txt);
     }
@@ -831,7 +726,7 @@ bool NowInDST()
     {
         return true;
     }
-    byte ind = yearNoDst - 17;
+    byte ind = yearNoDst - 18;
     if (monthStartDST == monthNoDst)
     {
         if(dayNoDst > dayDST[ind].start)
@@ -1088,7 +983,6 @@ byte IncDecValue(byte value, byte maxVal)
 {
     if (Puls[PULS_NEXT_HM].bRiseEdge)
     {
-// !!!!!!!!!!!      Status[mode].msInStatus = 0;
         value++;
         if (value >= maxVal)
         {
@@ -1097,7 +991,6 @@ byte IncDecValue(byte value, byte maxVal)
     }
     else if (Puls[PULS_PREV_HM].bRiseEdge)
     {
-// !!!!!!!!!!!      Status[mode].msInStatus = 0;
         value--;
         if (value == 255)
         {
@@ -1195,7 +1088,6 @@ void SetClockModeStatus(void* pStructData)
     oldsSetClockSubStatus = SetClockSubStates.GetStatusInd();
     SetClockSubStates.Manage();
     setClockSubStatus = SetClockSubStates.GetStatusInd();
-//  StateMachine(SetClockSubStatus, (int&)setClockSubStatus, (int&)oldsSetClockSubStatus);
 
     CalcWordClock(setMin, setHours);
 
@@ -1254,7 +1146,6 @@ int SetClockModeChangeStatus(void* pStructData)
 {
     if ((setClockSubStatus == SET_FINISH) ||
         Puls[PULS_MODE].bRiseEdge // !!!!!!!!!!! ||
-        // !!!!!!!!!!! Status[SET_CLOCK_MODE].bmaxMsInStatus
         )
     {
         return STANDARD_MODE;
@@ -1322,7 +1213,6 @@ int LedTestModeChangeStatus(void* pStructData)
         Puls[PULS_NEXT_HM].bRiseEdge    ||
         Puls[PULS_PREV_HM].bRiseEdge    ||
         bChangeToSTANDARD_MODE // !!!!!!!!!!! ||
-        // !!!!!!!!!!! Status[LED_TEST_MODE].bmaxMsInStatus
         )
     {
         return STANDARD_MODE;
@@ -1448,34 +1338,6 @@ byte ParseToDateTime (bool bSerial)
 }
 
 /* ***************************************************************************************
-   Legge DATA E ORA da bluetooth e controlla i valori letti, se ok return TRUE
- * **************************************************************************************/
-//byte BluetoothParseToDateTime()
-//{
-//    year    = bluetooth.parseInt();
-//    month   = bluetooth.parseInt();
-//    day     = bluetooth.parseInt();
-//    hour    = bluetooth.parseInt();
-//    minute  = bluetooth.parseInt();
-//    second  = bluetooth.parseInt();
-//    return CheckDateAndHourValue(year, month, day, hour, minute, second);
-//}
-
-/* ***************************************************************************************
-   Legge DATA E ORA da seriale e controlla i valori letti, ritorno un eventuale codice di errore
- * **************************************************************************************/
-//byte SerialParseToDateTime()
-//{
-//    year    = Serial.parseInt();
-//    month   = Serial.parseInt();
-//    day     = Serial.parseInt();
-//    hour    = Serial.parseInt();
-//    minute  = Serial.parseInt();
-//    second  = Serial.parseInt();
-//    return CheckDateAndHourValue(year, month, day, hour, minute, second);
-//}
-
-/* ***************************************************************************************
    Controlla se il carattere passato è corretto per il comando SERIAL_CMD_LIGHT_SET
    return true se ok, false altrimenti
  * **************************************************************************************/
@@ -1494,36 +1356,6 @@ bool ParseSetLightLevel(bool bSerial)
     }
     return false;
 }
-
-/* ***************************************************************************************
-   Legge il valore di duty cycle per il PWM della luminosità dei led
-   return true se ok, false altrimenti
- * **************************************************************************************/
-//bool SerialParseSetLightLevel()
-//{
-//    char c1 = Serial.read();
-//    if (IsCharSetLightLevel(c1))
-//    {
-//        PWM_dutyCycle = Serial.parseInt();
-//        return true;
-//    }
-//    return false;
-//}
-
-/* ***************************************************************************************
-   Legge il valore di duty cycle per il PWM della luminosità dei led
-   return true se ok, false altrimenti
- * **************************************************************************************/
-//bool BluetoothParseSetLightLevel()
-//{
-//    char c1 = bluetooth.read();
-//    if (IsCharSetLightLevel(c1))
-//    {
-//        PWM_dutyCycle = bluetooth.parseInt();
-//        return true;
-//    }
-//    return false;
-//}
 
 /* ***************************************************************************************
    abilita o disabilita il LED TEST in funzine dei valori letti
@@ -1549,26 +1381,6 @@ void ParseLedTestEnable(bool bSerial)
     char c2 = SerialRead(bSerial);
     CheckLedTestEnable (c1, c2);
 }
-
-/* ***************************************************************************************
-   abilita o disabilita il LED TEST
- * **************************************************************************************/
-//void SerialParseLedTestEnable()
-//{
-//    char c1 = Serial.read();
-//    char c2 = Serial.read();
-//    CheckLedTestEnable (c1,  c2);
-//}
-
-/* ***************************************************************************************
-   abilita o disabilita il LED TEST
- * **************************************************************************************/
-//void BluetoothParseLedTestEnable()
-//{
-//    char c1 = bluetooth.read();
-//    char c2 = bluetooth.read();
-//    CheckLedTestEnable (c1,  c2);
-//}
 
 void SerialHelp()
 {
@@ -1677,157 +1489,6 @@ void ManageAllSerialCommand(bool bSerial)
     }
     (bSerial) ? (serialNumLoop = numLoop) : (bluetoothNumLoop = numLoop);
 }
-
-/* ***************************************************************************************
-    Gestione dei comandi da seriale embedded
- * **************************************************************************************/
-//void ManageSerialCommand()
-//{
-//    static byte numLoop = 0;
-//    static byte maxLoop = 5;
-//    // controlli su seriale embedded
-//    switch (CharAvailableOnSerial(true))
-////    switch (Serial.available())
-//    {
-//      int nc;
-////      int nc = Serial.available();
-//        nc = CharAvailableOnSerial(true);
-////        Serial.print("*****");
-////        Serial.println(nc,DEC);
-//        if ((nc > SERIAL_CMD_MAX_LEN) || (numLoop > maxLoop))
-//        {
-////            while (Serial.available())
-//            while (CharAvailableOnSerial(true))
-//            {
-////                 Serial.read();
-//                 SerialRead(true);
-//            }
-//            char txt[64];
-//            sprintf(txt, "flushing %d chararacters", nc);
-//            Serial.println(txt);
-//        }
-//        case SERIAL_CMD_SET_CLOCK: // acquisisce la stringa con data ed ora
-//                numLoop = 0;
-//                byte retCode;
-//                retCode = ParseToDateTime(true);
-////                retCode = SerialParseToDateTime();
-//                if (retCode == CHECKDATATIME_OK)
-//                {
-//                    SetDS3231();
-//                    Serial.println("--- Well done, clock set! :)");
-//                }
-//                else
-//                {
-//                    Serial.println("*** ERROR parsing command!***");
-//                    Serial.println(checkDateDimeString[retCode].s);
-//                    Serial.println("check the command string");
-//                    Serial.println("must be in YY;MM;DD;hh:mm format");
-//                    Serial.println("and have valid values");
-//                }
-//                break;
-//        case SERIAL_CMD_ENABLE_LEDTEST: // controlla se e' in arrivo una stringa da 2 caratteri ET (Enable Test) oppure qualunque coppia di caratteri per disabilitare
-//                numLoop = 0;
-//                //SerialParseLedTestEnable();
-//                ParseLedTestEnable(true);
-//                break;
-//        case SERIAL_CMD_LIGHT_SET:
-////                if (!SerialParseSetLightLevel())
-//                if (!ParseSetLightLevel(true))
-//                {
-//                    Serial.println("*** ERROR parsing command!***");
-//                }
-//                else
-//                {
-//                    Serial.println("duty cycle uptated");
-//                }
-//                break;
-//        default:
-//                numLoop++;
-//                break;
-//    }
-//}
-
-/* ***************************************************************************************
-    Gestione dei comandi da seriale bluetooth
- * **************************************************************************************/
-//void ManageBluetoothCommand()
-//{
-//    static byte numLoop = 0;
-//    static byte maxLoop = 5;
-//    // controlli su seriale bluetooth
-////    int nc = bluetooth.available();
-//    int nc = CharAvailableOnSerial(false);
-//    if ((nc > SERIAL_CMD_MAX_LEN) || (numLoop > maxLoop))
-//    {
-//        numLoop = 0;
-////        while (bluetooth.available())
-//        while (CharAvailableOnSerial(false))
-//        {
-////            bluetooth.read();
-//            SerialRead(false);
-//        }
-//        char txt[64];
-//        sprintf(txt, "*@flushing %d chararacters", nc);
-//        bluetooth.println(txt);
-//    }
-//    switch (nc)
-//    {
-//        case SERIAL_CMD_SET_CLOCK: // acquisisce la stringa con data ed ora
-//                numLoop = 0;
-//                byte retCode;
-//                retCode = ParseToDateTime(false);
-////                retCode = SerialParseToDateTime();
-//                if (retCode == CHECKDATATIME_OK)
-//                {
-//                    SetDS3231();
-//                    bluetooth.println("*@--- Well done, clock set! :)");
-//                    Serial.println("--- Well done, clock set! :)");
-//                }
-//                else
-//                {
-//                    bluetooth.println("*@*** ERROR parsing command!***");
-//                    char txt[64];
-//                    sprintf(txt, "*@%s",checkDateDimeString[retCode].s);
-//                    bluetooth.println("*@check the command string");
-//                    bluetooth.println("*@must be in YY;MM;DD;hh:mm format");
-//                    bluetooth.println("*@and have valid values");
-//                }
-//                break;
-//        case SERIAL_CMD_ENABLE_LEDTEST: // controlla se e' in arrivo una stringa da 2 caratteri ET (Enable Test) oppure qualunque coppia di caratteri per disabilitare
-//                numLoop = 0;
-////                BluetoothParseLedTestEnable();
-//                ParseLedTestEnable(false);
-//                break;
-//        case SERIAL_CMD_HELP:
-//                numLoop = 0;
-//                BluetoothHelp();
-//        case SERIAL_CMD_LIGHT_SET:
-////                if (!BluetoothParseSetLightLevel())
-//                if (!ParseSetLightLevel(false))
-//                {
-//                    bluetooth.println("*@*** ERROR parsing command!***");
-//                }
-//                else
-//                {
-//                    bluetooth.println("*@duty cycle uptated");
-//                }
-//                break;
-//        default: if (nc > 0)
-//                {
-//                    numLoop++;
-//                }
-//                break;
-//    }
-//}
-
-/* ***************************************************************************************
-    Gestione dei comandi da tutte le seriali
- * **************************************************************************************/
-//void ManageAllSerialCommand()
-//{
-//    ManageSerialCommand();
-//    ManageBluetoothCommand();
-//}
 
 /* =======================================================================================
    =======================================================================================
@@ -1944,52 +1605,6 @@ void CalcWordClock(byte vminute, byte vhour)
         Led[LED_PM].bOut = PM;
     }
 }
-
-///* =======================================================================================
-//   =======================================================================================
-//  MACCHINA A STATI GENERICA
-//  ****** la routine di cambio stato DEVE essere sempre definita! *******
-//  le altre (pickup, stato e dropout) possono non essere definite
-//   =======================================================================================
-//   ======================================================================================= */
-//void StateMachine(myStatus* pStatus, int& act_mode, int& past_mode)
-//{
-//  // controllo del cambio stato
-//  act_mode = (*pStatus[act_mode].pChangeStatus)();
-//
-//  if (act_mode != past_mode)
-//  {
-//      // cambio stato
-//      char txt[64];
-//      sprintf (txt, "Change from %s to %s",
-//                  pStatus[past_mode].associateString,
-//                  pStatus[act_mode].associateString);
-//      Serial.println(txt);
-//
-//      if (*pStatus[past_mode].pDropOut != nullptr)
-//      {
-//          (*pStatus[past_mode].pDropOut)();
-//      }
-//
-//      past_mode = act_mode;
-//
-//      if (*pStatus[act_mode].pPickUp != nullptr)
-//      {
-//          (*pStatus[act_mode].pPickUp)();
-//      }
-//      pStatus[act_mode].msInStatus = 0;
-//  }
-//  else
-//  {
-//      // calcolo permanenza nello stato e gestione stato
-//      pStatus[act_mode].msInStatus += MS_CYCLE;
-//      pStatus[act_mode].bmaxMsInStatus = (Status[act_mode].msInStatus >= Status[act_mode].maxMsInStatus);
-//      if (*pStatus[past_mode].pStatus != nullptr)
-//      {
-//          (*pStatus[act_mode].pStatus)();
-//      }
-//  }
-//}
 
 /* ***************************************************************************************
     Calcoli vari in funzione dei cicli:
@@ -2163,7 +1778,6 @@ void loop()
 {
     ManageCycleCounters();
 
-//  ManageAllSerialCommand();
     ManageAllSerialCommand(USB_SERIAL);
     ManageAllSerialCommand(BLUETOOTH_SERIAL);
 
@@ -2172,7 +1786,6 @@ void loop()
     oldMode = States.GetStatusInd();
     States.Manage();
     mode = States.GetStatusInd();
-//  StateMachine(Status, (int&)mode, (int&)oldMode);
 
     WriteOutput();
 
