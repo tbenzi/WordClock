@@ -503,6 +503,8 @@ byte    ledInTest     = 255;    // numero del LED in test (modalità LED_TEST_MO
 static bool USB_SERIAL = true;
 static bool BLUETOOTH_SERIAL = false;
 
+bool bErrStates = false;
+
 int mode;                   // modalità attiva
 int oldMode;                // modalità attiva precedente
 
@@ -1364,19 +1366,27 @@ bool ParseSetLightLevel(bool bSerial)
  * **************************************************************************************/
 void CheckLedTestEnable (char c1, char c2)
 {
+    Serial.println("CheckLedTestEnable");
+    delay(100);
     if (((c1 == 'E') || (c1 == 'e')) &&
         ((c2 == 'T') || (c2 == 't')))
     {
+Serial.println("bChangeToLED_TEST_MODE = true");
         bChangeToLED_TEST_MODE = true;
+    delay(100);
     }
     else
     {
+Serial.println("bChangeToSTANDARD_MODE = true");
         bChangeToSTANDARD_MODE = true;
+    delay(100);
     }
 }
 
 void ParseLedTestEnable(bool bSerial)
 {
+    Serial.println("ParseLedTestEnable");
+    delay(100);
     char c1 = SerialRead(bSerial);
     char c2 = SerialRead(bSerial);
     CheckLedTestEnable (c1, c2);
@@ -1452,7 +1462,7 @@ void ManageAllSerialCommand(bool bSerial)
                         Serial.println("check the command string");
                         Serial.println("must be in YY;MM;DD;hh:mm format");
                         Serial.println("and have valid values");
-                    }
+}
                     else
                     {
                         bluetooth.println("*@*** ERROR parsing command!***");
@@ -1465,13 +1475,20 @@ void ManageAllSerialCommand(bool bSerial)
                 }
                 break;
         case SERIAL_CMD_HELP:
+                Serial.println("SERIAL_CMD_HELP");
+                delay(100);
                 numLoop = 0;
                 (bSerial) ? SerialHelp() : BluetoothHelp();
+                break;
         case SERIAL_CMD_ENABLE_LEDTEST: // controlla se e' in arrivo una stringa da 2 caratteri ET (Enable Test) oppure qualunque coppia di caratteri per disabilitare
+                Serial.println("SERIAL_CMD_ENABLE_LEDTEST");
+                delay(100);
                 numLoop = 0;
                 ParseLedTestEnable(bSerial);
                 break;
         case SERIAL_CMD_LIGHT_SET:
+                Serial.println("SERIAL_CMD_LIGHT_SET");
+                delay(100);
                 if (!ParseSetLightLevel(bSerial))
                 {
                     if (bSerial) Serial.println("*** ERROR parsing command!***");
@@ -1664,9 +1681,11 @@ void setup()
 
     bluetooth.begin(9600);
 
-    States.AssignData(nullptr, 0);
-
-    States.AssignState( 0,
+    States.AssignData(nullptr, MS_CYCLE);
+    
+    States.EnableLog(true);
+    
+    States.AssignState( STANDARD_MODE,
                         StandardModeStatus,
                         nullptr,
                         nullptr,
@@ -1675,8 +1694,8 @@ void setup()
                         0,
                         0,
                         "Standard");
-
-    States.AssignState( 1,
+                        
+    States.AssignState( SET_CLOCK_MODE,
                         SetClockModeStatus,
                         SetClockModeDropOut,
                         nullptr,
@@ -1686,18 +1705,19 @@ void setup()
                         0,
                         "SetClock");
 
-    States.AssignState( 1,
+    States.AssignState( LED_TEST_MODE,
                         LedTestModeStatus,
                         nullptr,
                         nullptr,
                         LedTestModePickUp,
                         LedTestModeChangeStatus,
-                        0,
-                        0,
+                        6000,
+                        STANDARD_MODE,
                         "TestLed");
+                        
+    SetClockSubStates.AssignData(nullptr, MS_CYCLE);
 
-    SetClockSubStates.AssignData(nullptr, 0);
-    SetClockSubStates.AssignState( 0,
+    SetClockSubStates.AssignState( SET_HOUR,
                         SetHourStatus,
                         nullptr,
                         nullptr,
@@ -1707,7 +1727,7 @@ void setup()
                         0,
                         "SET_HOUR");
 
-    SetClockSubStates.AssignState(  1,
+    SetClockSubStates.AssignState( SET_MINUTES,
                         SetMinutesStatus,
                         nullptr,
                         nullptr,
@@ -1717,7 +1737,7 @@ void setup()
                         0,
                         "SET_MINUTES");
 
-    SetClockSubStates.AssignState(  1,
+    SetClockSubStates.AssignState( SET_FINISH,
                         nullptr,
                         nullptr,
                         nullptr,
@@ -1767,6 +1787,19 @@ void setup()
     //Serial.println("      SET to change mode to SET");
     Serial.print("\n");
     delay(500);
+    
+    int err1 = States.GetInitError();
+    int err2 = SetClockSubStates.GetInitError();
+    
+    if ((err1 != NO_ERROR) || (err2 != NO_ERROR))
+    {
+		char txt[64];
+		sprintf(txt,"States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
+		Serial.println(txt);
+        bErrStates = true;
+    }
+
+    States.EnableLog(true);
 }
 
 /* =======================================================================================
@@ -1776,6 +1809,11 @@ void setup()
    ======================================================================================= */
 void loop()
 {
+    if (bErrStates)
+    {
+        return;
+    }
+
     ManageCycleCounters();
 
     ManageAllSerialCommand(USB_SERIAL);
