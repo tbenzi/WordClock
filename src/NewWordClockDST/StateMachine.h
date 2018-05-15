@@ -70,8 +70,8 @@ class CStateMachine
 		myPickUpFunc m_fPickUp[NUM_STATES];                     // PickUp (into a state) functions vector
 		myChangeStatusFunc m_fChangeStatus[NUM_STATES];         // ChangeStatus functions vector
 		const char* m_StatusName[NUM_STATES];                   // State names vector
-		long int m_MaxMsInStatus[NUM_STATES];                        // Maximum allowed time to stack in any states vector 
-		long int m_MsInStatus[NUM_STATES];
+		long m_MaxMsInStatus[NUM_STATES];                        // Maximum allowed time to stack in any states vector 
+		long m_MsInStatus[NUM_STATES];
 		int m_NextStatusIfExceededMaxMsInStatus[NUM_STATES];    // Next State to go if exceeded the maximum time in the state
 		int m_actualStatus;
 		int m_oldStatus;
@@ -122,7 +122,7 @@ class CStateMachine
 						myTransitionFunc*       fTransition = nullptr,
 						myPickUpFunc            fPickUp = nullptr,
 						myChangeStatusFunc      fChangeStatusFunc = nullptr,
-						long int                MaxMsInStatus = 0,
+						long                    MaxMsInStatus = 0,
 						int                     NextStatusIfOverMaxMsInStatus = 0,
 						const char*             stausName = nullptr) 
 		{
@@ -130,7 +130,7 @@ class CStateMachine
             
 			if (m_bLogEnable)
 			{
-				sprintf(txt,"\n*** StateMachine::AssignState\n ind:%d\n fStatus:%p\n fDropOut:%p\n fTransition:%p\n fPickUp:%p\n fChangeStatusFunc:%p\n MaxMsInStatus:%d\n NextStatusIfOverMaxMsInStatus:%d\n stausName%d",
+				sprintf(txt,"\n*** StateMachine::AssignState\n ind:%d\n fStatus:%p\n fDropOut:%p\n fTransition:%p\n fPickUp:%p\n fChangeStatusFunc:%p\n MaxMsInStatus:%ld\n NextStatusIfOverMaxMsInStatus:%d\n stausName%d",
 						ind,
 						fStatus,
 						fDropOut,
@@ -259,7 +259,7 @@ class CStateMachine
 				m_MsInStatus[m_actualStatus] += m_msecCycle;
 				if (m_bLogEnable)
 				{
-					sprintf(txt,"StateMachine::Manage - MaxMsInStatus:%d Check the stay time in the state, now is:%d",
+					sprintf(txt,"StateMachine::Manage - MaxMsInStatus:%ld Check the stay time in the state, now is:%ld",
 								m_MaxMsInStatus[m_actualStatus],
 								m_MsInStatus[m_actualStatus]);
 					Serial.println(txt);

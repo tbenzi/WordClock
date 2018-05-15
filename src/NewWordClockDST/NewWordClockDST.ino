@@ -1711,7 +1711,7 @@ void setup()
                         nullptr,
                         LedTestModePickUp,
                         LedTestModeChangeStatus,
-                        6000,
+                        60000L,
                         STANDARD_MODE,
                         "TestLed");
                         
