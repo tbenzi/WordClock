@@ -147,9 +147,10 @@
 // ================================================================================
 // HW utilizzato:
 //      1 x Arduino Mega 2560
-//      4 x uln2803 (Darlington transistor array)
+//      4 x uln2803 (Darlington transistor array - pilotaggio dei led)
 //      1 x Modulo RTC DS3231 (Real Time Clock)
 //      1 x Modulo HC-06 (Bluetooth)
+//      1 x TIP122 Darlington (per la varaizione lunminosità dei led)
 //      Stricia LED tagliata in segmenti opportuni per le varie parole
 //
 // Connessioni
@@ -503,7 +504,7 @@ byte    ledInTest     = 255;    // numero del LED in test (modalità LED_TEST_MO
 static bool USB_SERIAL = true;
 static bool BLUETOOTH_SERIAL = false;
 
-bool bErrStates = false;
+bool bErrStates = false;    // controllo sulla corretta inizializzazine delle macchine a stati
 
 int mode;                   // modalità attiva
 int oldMode;                // modalità attiva precedente
@@ -868,12 +869,7 @@ void ShowDateTimeOnSerial()
     MACCHINA A STATI PRINCIPALE
    =======================================================================================
    ======================================================================================= */
- void ResetCouterAndFlag()
- {
-// !!!!!!!!!!!!!    Status[mode].msInStatus = 0;
-// !!!!!!!!!!!!!    Status[mode].bmaxMsInStatus = false;
- }
-
+ 
 /* =======================================================================================
    =======================================================================================
    Gestione di STANDARD MODE
@@ -898,7 +894,6 @@ void StandardModeStatus(void* pStructData)
  * **************************************************************************************/
 void StandardModePickUp(void* pStructData)
 {
-    ResetCouterAndFlag();
     bChangeToSTANDARD_MODE = false;
 }
 
@@ -1039,7 +1034,6 @@ void SetMinutesStatus(void* pStructData)
  * **************************************************************************************/
 void SetMinutesPickUp (void* pStructData)
 {
-    // !!!!!!!!!!!!!!! Status[mode].msInStatus = 0;
 }
 
 /* ***************************************************************************************
@@ -1106,7 +1100,6 @@ void SetClockModePickUp (void* pStructData)
 {
     register myLed* pLed = &Led[0];
 
-    ResetCouterAndFlag();
     setClockSubStatus       = SET_HOUR;
     oldsSetClockSubStatus   = SET_HOUR;
     setMin      = minute;
@@ -1193,8 +1186,6 @@ void LedTestModePickUp (void* pStructData)
 {
     register myLed* pLed = &Led[0];
 
-    ResetCouterAndFlag();
-
     bChangeToLED_TEST_MODE = false;
     for (byte item = 0; item < NUM_LED; item++, pLed++)
     {
@@ -1228,7 +1219,8 @@ int LedTestModeChangeStatus(void* pStructData)
    =======================================================================================
    ======================================================================================= */
 
- // DA FARE
+/* ***************************************************************************************
+ * **************************************************************************************/
 int CharAvailableOnSerial(bool bSerial)
 {
     if (bSerial)
@@ -1241,6 +1233,8 @@ int CharAvailableOnSerial(bool bSerial)
     }
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 char SerialRead(bool bSerial)
 {
     if (bSerial)
@@ -1253,6 +1247,8 @@ char SerialRead(bool bSerial)
     }
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 int SerialParseInt(bool bSerial)
 {
     if (bSerial)
@@ -1265,6 +1261,8 @@ int SerialParseInt(bool bSerial)
     }
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 size_t SerialPrintln(bool bSerial, const char* c)
 {
     if (bSerial)
@@ -1277,6 +1275,8 @@ size_t SerialPrintln(bool bSerial, const char* c)
     }
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 size_t SerialPrintln(bool bSerial, int val, int format)
 {
     if (bSerial)
@@ -1328,6 +1328,8 @@ byte CheckDateAndHourValue(byte yy, byte MM, byte dd, byte hh, byte mm, byte ss)
     return CHECKDATATIME_OK;
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 byte ParseToDateTime (bool bSerial)
 {
     year    = SerialParseInt(bSerial);
@@ -1348,6 +1350,8 @@ bool IsCharSetLightLevel(char c)
     return ((c == 'L') || (c == 'l'));
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 bool ParseSetLightLevel(bool bSerial)
 {
     char c1 = SerialRead(bSerial);
@@ -1371,18 +1375,16 @@ void CheckLedTestEnable (char c1, char c2)
     if (((c1 == 'E') || (c1 == 'e')) &&
         ((c2 == 'T') || (c2 == 't')))
     {
-Serial.println("bChangeToLED_TEST_MODE = true");
         bChangeToLED_TEST_MODE = true;
-    delay(100);
     }
     else
     {
-Serial.println("bChangeToSTANDARD_MODE = true");
         bChangeToSTANDARD_MODE = true;
-    delay(100);
     }
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 void ParseLedTestEnable(bool bSerial)
 {
     Serial.println("ParseLedTestEnable");
@@ -1392,6 +1394,8 @@ void ParseLedTestEnable(bool bSerial)
     CheckLedTestEnable (c1, c2);
 }
 
+/* ***************************************************************************************
+ * **************************************************************************************/
 void SerialHelp()
 {
     Serial.read();
@@ -1701,8 +1705,8 @@ void setup()
                         nullptr,
                         SetClockModePickUp,
                         SetClockModeChangeStatus,
-                        0,
-                        0,
+                        300000L,
+                        STANDARD_MODE,
                         "SetClock");
 
     States.AssignState( LED_TEST_MODE,
