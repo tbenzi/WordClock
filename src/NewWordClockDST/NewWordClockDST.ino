@@ -1161,6 +1161,7 @@ void LedTestModeStatus(void* pStructData)
 {
     if (!bRefreshCycle)
     {
+        delay(10000);
         return;
     }
     if (ledInTest != 255)
@@ -1715,9 +1716,11 @@ void setup()
                         nullptr,
                         LedTestModePickUp,
                         LedTestModeChangeStatus,
-                        60000L,
+                        600000L,
                         STANDARD_MODE,
                         "TestLed");
+
+    SetClockSubStates.EnableLog(true);
                         
     SetClockSubStates.AssignData(nullptr, MS_CYCLE);
 
@@ -1803,7 +1806,8 @@ void setup()
         bErrStates = true;
     }
 
-    States.EnableLog(true);
+    States.EnableLog(false);
+    SetClockSubStates.EnableLog(false);
 }
 
 /* =======================================================================================
