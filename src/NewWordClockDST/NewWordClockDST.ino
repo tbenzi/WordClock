@@ -1873,9 +1873,10 @@ void setup()
     
     if ((err1 != NO_ERROR) || (err2 != NO_ERROR))
     {
-		char txt[64];
-		sprintf(txt,"States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
-		Serial.println(txt);
+//      char txt[64];
+//      sprintf(txt,"States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
+//      Serial.println(txt);
+        Serial.printf("States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
         bErrStates = true;
     }
 
@@ -1892,6 +1893,7 @@ void loop()
 {
     if (bErrStates)
     {
+        Serial.prinln(" ERRORE NELLA DEFINIZIONE DEGLI STATI ----- MORTO");
         return;
     }
 
