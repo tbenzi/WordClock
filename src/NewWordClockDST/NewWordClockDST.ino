@@ -1220,6 +1220,10 @@ void LedTestModePickUp (void* pStructData)
     {
         pLed->bOut = false;
     }
+    if (bSingleStepLedTest)
+    {
+        NextLedInTest();
+    }
 }
 
 /* ***************************************************************************************
@@ -1237,6 +1241,7 @@ int LedTestModeChangeStatus(void* pStructData)
         bChangeToSTANDARD_MODE // !!!!!!!!!!! ||
         )
     {
+        ledInTest = 255;
         return STANDARD_MODE;
     }
     return LED_TEST_MODE;
@@ -1418,10 +1423,12 @@ void CheckLedTestEnable (char c1, char c2)
  * **************************************************************************************/
 void CheckSingleStepLedTestEnable (char c1, char c2, char c3)
 {
+    Serial.println("CheckSingleStepLedTestEnable");
     if (((c1 == 'E') || (c1 == 'e')) &&
         ((c2 == 'S') || (c2 == 's')) &&
-        ((c2 == 'T') || (c2 == 't')))
+        ((c3 == 'T') || (c3 == 't')))
     {
+        Serial.println("bChangeToLED_TEST_MODE = true");
         bChangeToLED_TEST_MODE = true;
         bSingleStepLedTest = true;
     }
@@ -1443,10 +1450,12 @@ void ParseSingleCharCommand(bool bSerial)
     char c1 = SerialRead(bSerial);
     if ((c1 == 'N') || (c1 == 'n'))
     {
+        Serial.println("SERIAL_CMD_NEXT_STEPLED_TEST");
         NextLedInTest();
     }
     else
     {
+        Serial.println("SERIAL_CMD_HELP");
         (bSerial) ? SerialHelp() : BluetoothHelp();
     }
 }
@@ -1455,6 +1464,7 @@ void ParseSingleCharCommand(bool bSerial)
  * **************************************************************************************/
 void ParseSingleStepLedTestEnable(bool bSerial)
 {
+    Serial.println("ParseSingleStepLedTestEnable");
     char c1 = SerialRead(bSerial);
     char c2 = SerialRead(bSerial);
     char c3 = SerialRead(bSerial);
@@ -1552,7 +1562,6 @@ void ManageAllSerialCommand(bool bSerial)
                 }
                 break;
         case SERIAL_CMD_1CHAR:
-                Serial.println("SERIAL_CMD_HELP");
                 delay(100);
                 numLoop = 0;
                 ParseSingleCharCommand(bSerial);
@@ -1562,6 +1571,12 @@ void ManageAllSerialCommand(bool bSerial)
                 delay(100);
                 numLoop = 0;
                 ParseLedTestEnable(bSerial);
+                break;
+        case SERIAL_CMD_ENABLE_SINGLE_LEDTEST: // controlla se e' in arrivo una stringa da 3 caratteri EST (Enable Single Test)
+                Serial.println("SERIAL_CMD_ENABLE_SINGLE_LEDTEST");
+                delay(100);
+                numLoop = 0;
+                ParseSingleStepLedTestEnable(bSerial);
                 break;
         case SERIAL_CMD_LIGHT_SET:
                 Serial.println("SERIAL_CMD_LIGHT_SET");
@@ -1873,10 +1888,9 @@ void setup()
     
     if ((err1 != NO_ERROR) || (err2 != NO_ERROR))
     {
-//      char txt[64];
-//      sprintf(txt,"States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
-//      Serial.println(txt);
-        Serial.printf("States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
+        char txt[64];
+        sprintf(txt,"States err:%d - %s   SetClockSubStates:%d - %s", err1, States.GetInitErrorString(), err2, SetClockSubStates.GetInitErrorString());
+        Serial.println(txt);
         bErrStates = true;
     }
 
@@ -1893,7 +1907,7 @@ void loop()
 {
     if (bErrStates)
     {
-        Serial.prinln(" ERRORE NELLA DEFINIZIONE DEGLI STATI ----- MORTO");
+        Serial.println(" ERRORE NELLA DEFINIZIONE DEGLI STATI ----- MORTO");
         return;
     }
 
