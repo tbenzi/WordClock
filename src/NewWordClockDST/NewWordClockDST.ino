@@ -82,7 +82,8 @@
 //  - una stringa da 14 caratteri (aa,mm,gg,hh,mm) set RTC
 //  - una stringa da 2 caratteri ET (Enable Test) oppure qualunque coppia di caratteri
 //       per disabilitare il test
-//  - una stringa da 1 carattere (qualsiasi) per l'help dei comandi
+//  - una stringa da 1 carattere: N (Next) per passare al prossimo LED in caso di Test LED con step singolo
+//                               (qualsiasi diverso da N) per l'help dei comandi
 //  - una stringa da 4 caretteri Lnnn dove nnn va da 000 a 255 valore duty cycle uscita PWM
 //
 // Connettendosi in bluetooth si possono fare le stesse cose che si fanno con la
@@ -90,9 +91,17 @@
 //
 // Le scritte verso bluetooth sono pensate per utilizzare l'app "Bluetooth Electronics" presente su PlayStore
 //  in cui ho fatto una maschera che ha:
-//      Titolo
-//      terminale
-//      stringa da inviare
+//  .-------------------------------------------.
+//  |      Titolo                               |
+//  '-------------------------------------------'
+//  .-------------------------------------------.
+//  |                                           |
+//  |    terminale                              |   Monitor 14x48
+//  |                                           !
+//  '-------------------------------------------'
+//  .------------------------------------.------.
+//  |    stringa da inviare              | SEND |
+//  '------------------------------------'------'
 //  I testi che vanno nel Titolo sono preceduti da *# e terminano con *
 //  I testi che vanno sul terminale sono preceduti da *@
 // ================================================================================
