@@ -44,6 +44,7 @@
 //                      |                              |
 //                      |  AM   •    •    •    •   PM  |
 //                      '------------------------------'
+//
 // Le scritte sono in lingua inglese, la visualizzazione ha una granularità
 // principale di cinque minuti (o'clock - five - ten ...)
 // sono aggiunti del puntini (4 puntini) che portano la granularità al minuto
