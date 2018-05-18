@@ -39,11 +39,11 @@ esempi
 
 ## HW utilizzato:
   * 1 x Arduino Mega 2560
-  * 4 x uln2803 (Darlington transistor array)
+  * 4 x uln2803 (Darlington transistor array) per il pilotaggio dei led
   * 1 x Modulo RTC DS3231 (Real Time Clock)
   * 1 x Modulo HC-06 (Bluetooth)
   * Stricia LED tagliata in segmenti opportuni per le varie parole
-  * 1 x TIP122 (Power Darlington)
+  * 1 x TIP122 (Power Darlington) per variare la luminosità dei led
   * 4 x pulsanti
   * resistenze
   * alimentatore
