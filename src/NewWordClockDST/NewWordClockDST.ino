@@ -391,9 +391,13 @@ typedef enum E_BLUETOOTH_PIN {
 } ENUM_BLUETOOTH_PIN;
 
 typedef enum E_SERIAL_CMD {
-    SERIAL_CMD_HELP           = 1,  //  comando da 1 carattere H help comadi seriale
+    SERIAL_CMD_1CHAR          = 1,  //  comando da 1 carattere (diverso da N) H help comandi seriale
+                                    //  comando da 1 carattere N Next per passare al prossimo led test
     SERIAL_CMD_ENABLE_LEDTEST = 2,  //  comando da 2 caratteri ET (Enable Test) per abilitare il test delle uscite
                                     //  oppure qualunque coppia di caratteri per disabilitare
+    SERIAL_CMD_ENABLE_SINGLE_LEDTEST = 3,  //  comando da 2 caratteri EST (Enable Single Test) per abilitare il test delle uscite
+                                           // per passare alla successiva N
+                                           // qualunque coppia di caratteri per disabilitare
     SERIAL_CMD_SET_CLOCK      = 14, //  comando da 14 caratteri (aa,mm,gg,hh,mm) per set clock
     SERIAL_CMD_LIGHT_SET      =  4, //  comando da 4 caratteri Lnnn (L000 - L255) per variare la luminosità dei led
     SERIAL_CMD_MAX_LEN        = 14
@@ -500,6 +504,7 @@ boolean bLedBlink     = false;  // abilitazione al lampeggio dei LED (modalità 
 boolean bLedOn        = true;   // led lampeggianti accesi (modalità SET_CLOCK_MODE)
 boolean bToSet        = false;  // abilitazione al set dell'RTC in uscita dalla modalità SET_CLOCK_MODE
 byte    ledInTest     = 255;    // numero del LED in test (modalità LED_TEST_MODE)
+boolean bSingleStepLedTest = false; // abilita l'avanzamento su comando del LED in test (modalità LED_TEST_MODE)
 
 static bool USB_SERIAL = true;
 static bool BLUETOOTH_SERIAL = false;
@@ -712,6 +717,10 @@ void WriteOutput ()
                     Serial.print (txt);
                 }
                 Serial.print(pLed->associateString);
+                if(bSingleStepLedTest)
+                {
+                    Serial.print(" - type N to test next LED");
+                }
             }
         }
         Serial.print("\n");
@@ -1154,16 +1163,9 @@ int SetClockModeChangeStatus(void* pStructData)
    =======================================================================================
    ======================================================================================= */
 /* ***************************************************************************************
-   Gestione dello stato LED_TEST_MODE
-   Accende, uno alla volta, tutti i led csambiando il led acceso ad ogni clclo di refresh
  * **************************************************************************************/
-void LedTestModeStatus(void* pStructData)
+void NextLedInTest()
 {
-    if (!bRefreshCycle)
-    {
-        delay(10000);
-        return;
-    }
     if (ledInTest != 255)
     {
         Led[ledInTest].bOut = false;
@@ -1177,6 +1179,23 @@ void LedTestModeStatus(void* pStructData)
     }
 
     Led[ledInTest].bOut = true;
+}
+
+/* ***************************************************************************************
+   Gestione dello stato LED_TEST_MODE
+   Accende, uno alla volta, tutti i led csambiando il led acceso ad ogni clclo di refresh
+ * **************************************************************************************/
+void LedTestModeStatus(void* pStructData)
+{
+    if (!bRefreshCycle)
+    {
+        return;
+    }
+    if (bSingleStepLedTest)
+    {
+        return;
+    }
+    NextLedInTest();
 }
 
 /* ***************************************************************************************
@@ -1371,16 +1390,31 @@ bool ParseSetLightLevel(bool bSerial)
  * **************************************************************************************/
 void CheckLedTestEnable (char c1, char c2)
 {
-    Serial.println("CheckLedTestEnable");
-    delay(100);
     if (((c1 == 'E') || (c1 == 'e')) &&
         ((c2 == 'T') || (c2 == 't')))
     {
         bChangeToLED_TEST_MODE = true;
+        bSingleStepLedTest = false;
     }
     else
     {
         bChangeToSTANDARD_MODE = true;
+        bSingleStepLedTest = false;
+    }
+}
+
+/* ***************************************************************************************
+   abilita o disabilita il LED TEST in funzine dei valori letti
+       "EST" abilita led test mode (case insensitive)
+ * **************************************************************************************/
+void CheckSingleStepLedTestEnable (char c1, char c2, char c3)
+{
+    if (((c1 == 'E') || (c1 == 'e')) &&
+        ((c2 == 'S') || (c2 == 's')) &&
+        ((c2 == 'T') || (c2 == 't')))
+    {
+        bChangeToLED_TEST_MODE = true;
+        bSingleStepLedTest = true;
     }
 }
 
@@ -1388,8 +1422,6 @@ void CheckLedTestEnable (char c1, char c2)
  * **************************************************************************************/
 void ParseLedTestEnable(bool bSerial)
 {
-    Serial.println("ParseLedTestEnable");
-    delay(100);
     char c1 = SerialRead(bSerial);
     char c2 = SerialRead(bSerial);
     CheckLedTestEnable (c1, c2);
@@ -1397,16 +1429,44 @@ void ParseLedTestEnable(bool bSerial)
 
 /* ***************************************************************************************
  * **************************************************************************************/
+void ParseSingleCharCommand(bool bSerial)
+{
+    char c1 = SerialRead(bSerial);
+    if ((c1 == 'N') || (c1 == 'n'))
+    {
+        NextLedInTest();
+    }
+    else
+    {
+        (bSerial) ? SerialHelp() : BluetoothHelp();
+    }
+}
+
+/* ***************************************************************************************
+ * **************************************************************************************/
+void ParseSingleStepLedTestEnable(bool bSerial)
+{
+    char c1 = SerialRead(bSerial);
+    char c2 = SerialRead(bSerial);
+    char c3 = SerialRead(bSerial);
+    CheckSingleStepLedTestEnable (c1, c2, c3);
+}
+
+/* ***************************************************************************************
+ * **************************************************************************************/
 void SerialHelp()
 {
     Serial.read();
-    Serial.println("Available command: into []");
-    Serial.println("[any 1 char] this help");
-    Serial.println("[ET] to Enable Led Test");
-    Serial.println("     any other couple of char disable Led Test");
-    Serial.println("[AA,MM,DD,hh,mm] to clock set");
-    Serial.println("[Lnnn] to change Led light intensity");
-    Serial.println("       nnn value from 000 (off) to 255 (full light)");
+    Serial.println("*@Available command: into []");
+    Serial.println("*@[any 1 char but not 'N'] this help");
+    Serial.println("*@[ET] to Enable Led Test");
+    Serial.println("*@     any other couple of char disable Led Test");
+    Serial.println("*@[EST] to Enable Single Step Led Test");
+    Serial.println("*@[N]   Next Single Step Led Test");
+    Serial.println("*@      any other couple of char disable Single Led Test");
+    Serial.println("*@[AA,MM,DD,hh,mm] to clock set");
+    Serial.println("*@[Lnnn] to change Led light intensity");
+    Serial.println("*@       nnn value from 000 (off) to 255 (full light)");
 }
 
 /* ***************************************************************************************
@@ -1417,9 +1477,12 @@ void BluetoothHelp()
     //char c1 = bluetooth.read();
     bluetooth.read();
     bluetooth.println("*@Available command: into []");
-    bluetooth.println("*@[any 1 char] this help");
+    bluetooth.println("*@[any 1 char but not 'N'] this help");
     bluetooth.println("*@[ET] to Enable Led Test");
     bluetooth.println("*@     any other couple of char disable Led Test");
+    bluetooth.println("*@[EST] to Enable Single Step Led Test");
+    bluetooth.println("*@[N]   Next Single Step Led Test");
+    bluetooth.println("*@      any other couple of char disable Single Led Test");
     bluetooth.println("*@[AA,MM,DD,hh,mm] to clock set");
     bluetooth.println("*@[Lnnn] to change Led light intensity");
     bluetooth.println("*@       nnn value from 000 (off) to 255 (full light)");
@@ -1479,11 +1542,11 @@ void ManageAllSerialCommand(bool bSerial)
                     }
                 }
                 break;
-        case SERIAL_CMD_HELP:
+        case SERIAL_CMD_1CHAR:
                 Serial.println("SERIAL_CMD_HELP");
                 delay(100);
                 numLoop = 0;
-                (bSerial) ? SerialHelp() : BluetoothHelp();
+                ParseSingleCharCommand(bSerial);
                 break;
         case SERIAL_CMD_ENABLE_LEDTEST: // controlla se e' in arrivo una stringa da 2 caratteri ET (Enable Test) oppure qualunque coppia di caratteri per disabilitare
                 Serial.println("SERIAL_CMD_ENABLE_LEDTEST");
@@ -1788,7 +1851,8 @@ void setup()
 
     delay(100);
     Serial.println("Type: AA;MM,GG,hh,mm to set Clock");
-    Serial.println("      ET  (Enable Test) to change mode to LED_TEST");
+    Serial.println("      ET   (Enable Test) to change mode to ciclic LED_TEST ");
+    Serial.println("      EST  (Enable Single Test) to change mode to single step LED_TEST ");
     Serial.println("      Lnnn to change led light intensity");
     Serial.println("           nnn value from 000 (off) to 255 (full light)");
     //Serial.println("      SET to change mode to SET");
