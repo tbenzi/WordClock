@@ -49,6 +49,7 @@
 // principale di cinque minuti (o'clock - five - ten ...)
 // sono aggiunti del puntini (4 puntini) che portano la granularità al minuto
 // è indicato se AM o PM e se è attivo il DST ("Daylight Saving time" ossia ora legale)
+//
 // esempi
 // 5:00 it is "five" "o'clock"
 // 5:27 it is "twenty" "five" "minutes" "past" "five" "." "." -> 5:25 + 2 puntini
